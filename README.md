@@ -31,40 +31,8 @@ Services:
 - `say_text` (vector_ros2/srv/SayText)
 
 ## Setup
-
-1) Create and activate a venv with ROS site-packages:
-
-```bash
-python3 -m venv --system-site-packages /home/nils/vector_ws/.vector
-source /home/nils/vector_ws/.vector/bin/activate
-python3 -m pip install --upgrade pip
-```
-
-2) Install the wire-pod SDK fork:
-
-```bash
-python3 -m pip install wirepod_vector_sdk
-```
-
-3) Configure SDK creds (this writes `~/.anki_vector`):
-
-```bash
-python3 -m anki_vector.configure
-```
-
-4) Build the ROS 2 package:
-
-```bash
-cd /home/nils/vector_ws
-colcon build --packages-select vector_ros2
-source install/setup.bash
-```
-
-5) Run:
-
-```bash
-ros2 launch vector_ros2 vector.launch.py
-```
+TO WRITE
+It uses my version of the SDK linked to this workspace. Don't forget to adapt the configure file of the SDK with your Vector's parameters. 
 
 ## Notes
 
