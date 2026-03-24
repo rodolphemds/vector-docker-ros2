@@ -1,0 +1,33 @@
+{
+    "name": "ROS2 Kilted Kaiju",
+    "dockerComposeFile": "docker-compose.yml",
+    "service": "ros2-kilted-kaiju-desktop",
+    "shutdownAction": "none",
+    "workspaceFolder": "/workspace",
+    "forwardPorts": [6080],
+    "portsAttributes": {
+        "6080": {
+            "label": "noVNC GUI",
+            "onAutoForward": "openBrowser"
+        }
+    },
+    "customizations": {
+        "vscode": {
+            "extensions":[
+                "ms-vscode.cpptools",
+                "ms-vscode.cpptools-themes",
+                "twxs.cmake",
+                "donjayamanne.python-extension-pack",
+                "eamodio.gitlens",
+                "ms-iot.vscode-ros"
+            ]
+        }
+    },
+    "containerEnv": {
+        "ROS_AUTOMATIC_DISCOVERY_RANGE": "SUBNET",
+        "ROS_DOMAIN_ID": "42",
+        "ROS_LOCALHOST_ONLY": "0",
+        "RMW_IMPLEMENTATION": "rmw_fastrtps_cpp"
+    },
+    "postCreateCommand": "sudo rosdep update && sudo rosdep install --from-paths src --ignore-src -y && sudo chown -R $(whoami) /workspace/"
+}

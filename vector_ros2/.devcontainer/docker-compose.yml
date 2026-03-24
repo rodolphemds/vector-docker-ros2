@@ -1,0 +1,81 @@
+name: escapepod
+
+services:
+  novnc-display-server:
+    build:
+      context: /Users/rodolphe/Documents/Docker/docker-noVNC-display
+      dockerfile: dockerfile
+    container_name: novnc-display-server
+    hostname : novnc-display-server
+    shm_size: "2gb"
+    ports:
+      - "6080:6080"
+    environment:
+      DISPLAY: ":0"
+      SCREEN_WIDTH: "1600"
+      SCREEN_HEIGHT: "900"
+      SCREEN_DEPTH: "24"
+      VNC_PASSWORD: ${VNC_PASSWORD:-password}
+    volumes:
+      - x11-socket:/tmp/.X11-unix
+    networks:
+      - default
+    command: /bin/bash -lc "sleep infinity"
+
+  ros2-vector:
+    container_name: ros2-vector
+    hostname : ros2-vector
+    build:
+      context: /Users/rodolphe/Documents/Vector/vector-docker-ros2/
+      dockerfile: Dockerfile
+    environment:
+      ROS_DOMAIN_ID: "42"
+      ROS_AUTOMATIC_DISCOVERY_RANGE: SUBNET
+      ROS_LOCALHOST_ONLY: "0"
+      RMW_IMPLEMENTATION: rmw_fastrtps_cpp
+    networks:
+      - default
+    command: /bin/bash -lc "sleep infinity"
+
+  ros2-kilted-kaiju-desktop:
+    container_name: ros2-kilted-kaiju-desktop
+    hostname: ros2-kilted-kaiju-desktop
+    build:
+      context: ..
+      dockerfile: .devcontainer/Dockerfile
+      args:
+        USERNAME: root
+    privileged: true
+    environment:
+      LIBGL_ALWAYS_SOFTWARE: "1"
+      MESA_GL_VERSION_OVERRIDE: "3.3"
+      MESA_GLSL_VERSION_OVERRIDE: "330"
+      XDG_RUNTIME_DIR: /tmp/runtime-root
+      USERNAME: root
+      DISPLAY: ":0"
+      QT_X11_NO_MITSHM: "1"
+      ROS_AUTOMATIC_DISCOVERY_RANGE: SUBNET
+      ROS_DOMAIN_ID: "42"
+      ROS_LOCALHOST_ONLY: "0"
+      RMW_IMPLEMENTATION: rmw_fastrtps_cpp
+    depends_on:
+      - novnc-display-server
+    networks:
+      - default
+
+    volumes:
+      - home:/root
+      - ..:/workspace:cached
+      - /dev/dri:/dev/dri:cached
+      - x11-socket:/tmp/.X11-unix
+      
+    command: /bin/bash -lc "sleep infinity"
+
+ 
+networks:
+  default:
+    name: escapepod_default
+
+volumes:
+  x11-socket:
+  home:

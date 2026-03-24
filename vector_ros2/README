@@ -1,0 +1,35 @@
+ROS2 Kilted Kaiju Dev Container for Vector
+============== 
+# Aim 
+The aim is to create a stack of containers : 
+- ros2-kilted-kaiju-desktop : the core ROS2 Kilted Kaiju Desktop 
+- novnc-display-server : the graphical user interface for ROS2 accessible through a web browser 
+- vector-ros2 : the container for ROS2 Vector's specific package 
+- ros2-packages : the container for ROS2 other packages (TO DO) 
+This stack of containers integrates in the existing EscapePod one and is orchestrated with OrbStack. 
+
+# Content 
+TO GENERATE 
+
+
+
+## Quick validation
+1. In `ros2-kilted-kaiju-desktop` terminal:
+```bash
+ros2 topic pub /cross_container_demo std_msgs/msg/String "data: 'hello from kilted'" -r 1
+```
+
+2. In `vector-ros2` terminal:
+```bash
+ros2 topic echo /cross_container_demo
+```
+
+ros2 node list
+ros2 topic list
+```
+
+
+
+# Notes
+- novnc-display-server container relies on rodolphemds/docker-noVNC-display GitHub package stored on my computer at /Users/rodolphe/Documents/Docker/docker-noVNC-display. You can change this in .devcontainer/Dockerfile 
+- vector-ros2 container relies on rodolphemds/vector-docker-ros2 GitHub package stored on my computer at /Users/rodolphe/Documents/Docker/docker-noVNC-display. You can change this in .devcontainer/Dockerfile  /Users/rodolphe/Documents/Vector/vector-docker-ros2/

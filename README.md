@@ -30,9 +30,9 @@ Services:
 - `play_animation` (vector_ros2/srv/PlayAnimationTrigger)
 - `say_text` (vector_ros2/srv/SayText)
 
-## Setup
-TO WRITE
-It uses my version of the SDK linked to this workspace. Don't forget to adapt the configure file of the SDK with your Vector's parameters. 
+## Installation
+ 
+
 
 ## Notes
 
@@ -47,6 +47,7 @@ It uses my version of the SDK linked to this workspace. Don't forget to adapt th
   appends this to `PYTHONPATH` so ROS 2 can still find the package metadata.
 - The Vector URDF/xacro and meshes are included in this package and launched with
   `robot_state_publisher` by default.
+- This version of vector-docker-ros2 uses the rodolphemds/vector-wirepod-python-sdk version. As I already installed the SDK, I just copy the folder .anki_vector (extracted from my personal folder) I copied to the root of this folder on my computer to the container instead of running anki_vector.configure again. You can change line 34 to 36 in the dockerfile if you want to change this. 
 
 ## Parameters
 
