@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <link name="drop_ir">
+    <visual>
+      <geometry>
+        <box size="0.005 0.005 0.005"/>
+      </geometry>
+    </visual>
+  </link>
+
+  <joint name="drop_ir_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="drop_ir"/>
+    <origin xyz="0.0351028 0 -0.0213898" rpy="0 1.57 0" />
+  </joint>
+
+  <gazebo reference="drop_ir">
+    <sensor type="ray" name="ranger">
+      <pose>0 0 0 0 0 0</pose>
+      <visualize>true</visualize>
+      <update_rate>50</update_rate>
+      <ray>
+         <scan>
+            <horizontal>
+               <samples>10</samples>
+               <resolution>1</resolution>
+               <min_angle>-0.14835</min_angle>
+               <max_angle>0.14835</max_angle>
+            </horizontal>
+            <vertical>
+               <samples>10</samples>
+               <resolution>1</resolution>
+               <min_angle>-0.14835</min_angle>
+               <max_angle>0.14835</max_angle>
+            </vertical>
+         </scan>
+         <range>
+            <min>0.001</min>
+            <max>0.02</max>
+            <resolution>0.02</resolution>
+         </range>
+      </ray>
+      <topic>/cozmo/drop_sensor</topic>
+    </sensor>
+  </gazebo>
+
+</robot>

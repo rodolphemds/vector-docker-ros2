@@ -1,0 +1,14 @@
+dans le dossier navigation de ros2
+- crée un package ros2 appellé navigation qui ai pour pré-requis :
+     ros-jazzy-navigation2 \
+    ros-jazzy-nav2-bringup \
+    ros-jazzy-slam-toolbox \
+- qui servent à controler et naviguer vector, SLAM, qui stocke les maps 
+- crée un répertoire maps contenant les plans enregistrés pour la navigation
+- créer les launch files pour run les commandes suivants : 
+  * ros2 launch nav2_bringup bringup_launch.py autostart:=True map:=/path/to/your-map.yaml (avec path/to/your-map.yaml configurable au début du launch file utilisant un map provenant du dossier maps du package navigation), appelle ce launch file navigation.launch.py
+  * ros2 run rviz2 rviz2 -d $(ros2 pkg prefix nav2_bringup)/share/nav2_bringup/rviz/nav2_default_view.rviz, appelle ce launch file rviz_navigation.launch.py
+  * ros2 launch nav2_bringup navigation_launch.py et ros2 launch slam_toolbox online_async_launch.py et qui affiche les messages suivants : "Move your robot by requesting a goal through RViz or the ROS 2 CLI. You should see the map update live. To save this map to file, run : ros2 run nav2_map_server map_saver_cli -f /Vector/vector-docker-ros2/src/navigation/maps/your-map-name.yaml" 
+
+- dans le package bringup rajoute les fichiers launch permettant de lancer le fichier launch  du package navigation navigation.launch.py et vector_controller_bringup.launch.py (du package bringup)
+- dans le package bringup rajoute au fichier bringup.launch.py la commande permettant de lancer le fichier launch du package navigation navigation.launch.py

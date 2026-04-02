@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<package format="3">
+  <name>bringup</name>
+  <version>0.1.0</version>
+  <description>Bringup launch for Vector (foxglove_bridge + vector_controller)</description>
+  <maintainer email="you@example.com">you</maintainer>
+  <license>MIT</license>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <exec_depend>launch</exec_depend>
+  <exec_depend>launch_ros</exec_depend>
+  <exec_depend>foxglove_bridge</exec_depend>
+  <exec_depend>vector_controller</exec_depend>
+  <exec_depend>navigation</exec_depend>
+  <exec_depend>rviz2</exec_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>

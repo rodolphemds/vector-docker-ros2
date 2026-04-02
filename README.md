@@ -1,6 +1,36 @@
-# vector_ros2
+# controller
 
 ROS 2 (Jazzy) wrapper for Anki Vector running OSKR + wire-pod.
+
+## Repository Architecture
+
+```text
+vector-docker-ros2/
+├── README.md
+├── anim_list.md
+├── docker/
+├── dockerfile
+├── scripts/
+└── src/
+```
+
+- `README.md`: overview, topics/services, parameters, and container notes.
+- `anim_list.md`: reference list of animation names usable via the ROS2 service.
+- `docker/`: container runtime assets (including `entrypoint.sh`).
+- `dockerfile`: image build recipe for the ROS2 Jazzy + SDK runtime.
+- `scripts/`: helper scripts (for example IP update logic).
+- `src/`: ROS 2 packages (`anki_description`, `vector_controller`, `bringup`).
+
+At runtime, the ROS overlay workspace lives in `/ros_workspace` (it is not under the `/root` volume).
+
+## SDK Configuration File Locations
+
+- Host workspace source: `vector-wirepod-python-sdk/sdk_vector_config`
+- Container copied source: `/vector-wirepod-python-sdk/sdk_vector_config`
+- Container runtime target (used by SDK): `/root/sdk_vector_config`
+- Runtime override env var: `ANKI_SDK_CONFIG_DIR`
+
+At container startup, `docker/entrypoint.sh` copies the SDK repo from `/Vector/vector-wirepod-python-sdk` to `/vector-wirepod-python-sdk`, then copies `sdk_vector_config` into the runtime target.
 
 ## What it does
 
@@ -16,6 +46,7 @@ Publishes:
 - `joint_states` (sensor_msgs/JointState) for head and lift (URDF joint names)
 - `nav_map` (nav_msgs/OccupancyGrid)
 - `camera/image_raw` (sensor_msgs/Image)
+- `camera/camera_info` (sensor_msgs/CameraInfo)
 
 Subscribes:
 - `cmd_vel` (geometry_msgs/Twist)
@@ -27,8 +58,8 @@ Services:
 - `fetch_cube` (std_srvs/Trigger)
 - `go_home` (std_srvs/Trigger)
 - `drive_off_charger` (std_srvs/Trigger)
-- `play_animation` (vector_ros2/srv/PlayAnimationTrigger)
-- `say_text` (vector_ros2/srv/SayText)
+- `play_animation` (vector_controller/srv/PlayAnimationTrigger)
+- `say_text` (vector_controller/srv/SayText)
 
 ## Installation
  
@@ -45,9 +76,32 @@ Services:
 - If you use a venv for the SDK, set `venv_site_packages` in the launch file or export
   `VECTOR_VENV_SITE_PACKAGES` to point at the venv site-packages. The launch file
   appends this to `PYTHONPATH` so ROS 2 can still find the package metadata.
-- The Vector URDF/xacro and meshes are included in this package and launched with
+- The Vector URDF/xacro and meshes come from `anki_description` and are launched with
   `robot_state_publisher` by default.
-- This version of vector-docker-ros2 uses the rodolphemds/vector-wirepod-python-sdk version. As I already installed the SDK, I just copy the folder .anki_vector (extracted from my personal folder) I copied to the root of this folder on my computer to the container instead of running anki_vector.configure again. You can change line 34 to 36 in the dockerfile if you want to change this. 
+- For Foxglove 3D mesh rendering, use `foxglove_bridge`.
+- This version of vector-docker-ros2 uses the rodolphemds/vector-wirepod-python-sdk version. Credentials are stored in `vector-wirepod-python-sdk/sdk_vector_config` and copied to `/root/sdk_vector_config` at runtime. This avoids rerunning `anki_vector.configure` inside the container.
+
+## Foxglove 3D Mesh Fix
+
+If Foxglove shows errors like `Failed to load asset package://anki_description/meshes/...`, install and use `foxglove_bridge`:
+
+```bash
+sudo apt update
+sudo apt install -y ros-jazzy-foxglove-bridge
+ros2 launch bringup bringup.launch.py
+```
+
+Then connect Foxglove Studio to:
+
+```text
+ws://<your-host>:8765
+```
+
+Fallback (temporary): if you cannot use `foxglove_bridge` immediately, you can disable meshes:
+
+```bash
+ros2 launch vector_controller vector.launch.py use_meshes:=false
+```
 
 ## Parameters
 
@@ -79,7 +133,7 @@ Services:
 - `max_wheel_speed_mmps` (float)
 - `publish_tf` (bool): publish `odom` → `base_link` transform
 - `use_robot_state_publisher` (bool): launch `robot_state_publisher` (default true)
-- `model` (string): path to the xacro model (default vector_ros2/urdf/vector.xacro)
+- `model` (string): path to the xacro model (default anki_description/urdf/vector.xacro)
 - `joint_head_name` (string): URDF joint for head (default `base_to_head`)
 - `joint_lift_name` (string): URDF joint for lift (default `base_to_lift`)
 - `lift_use_angle` (bool): use SDK `lift_angle_rad` if available
@@ -97,7 +151,7 @@ Services:
 `play_animation` expects an animation trigger name:
 
 ```bash
-ros2 service call /play_animation vector_ros2/srv/PlayAnimationTrigger "{name: GreetAfterLongTime}"
+ros2 service call /play_animation vector_controller/srv/PlayAnimationTrigger "{name: GreetAfterLongTime}"
 ```
 
 List available animation triggers via the SDK:
@@ -118,3 +172,23 @@ PY
 - Add audio input/output topics.
 - Publish TF tree.
 - Add diagnostics for SDK connection state.
+
+## Dev Container
+
+### Aim 
+The aim is to create a stack of containers : 
+- ros2-jazzy-desktop : the core ROS2 Jazzy Desktop 
+- novnc-display-server : the graphical user interface for ROS2 accessible through a web browser 
+- vector-ros2 : the container for ROS2 Vector's specific package 
+- ros2-packages : the container for ROS2 other packages (TO DO) 
+This stack of containers integrates in the existing EscapePod one and is orchestrated with OrbStack. 
+
+### Content 
+TO GENERATE 
+
+
+
+
+### Notes
+- novnc-display-server container relies on rodolphemds/docker-noVNC-display GitHub package stored on my computer at /Users/rodolphe/Documents/Docker/docker-noVNC-display. You can change this in .devcontainer/Dockerfile 
+- vector-ros2 container relies on rodolphemds/vector-docker-ros2 GitHub package stored on my computer at /Users/rodolphe/Documents/Docker/docker-noVNC-display. You can change this in .devcontainer/Dockerfile  /Users/rodolphe/Documents/Vector/vector-docker-ros2/
