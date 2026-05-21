@@ -44,9 +44,14 @@ if [ -d "/vector-wirepod-python-sdk" ]; then
     source "/root/vector_ros2_venv/bin/activate"
     python3 -m pip install --upgrade pip
     PIP_USE_PEP517=0 python3 -m pip install --no-cache-dir -e "/vector-wirepod-python-sdk[3dviewer]"
-    mkdir -p "${ANKI_SDK_CONFIG_DIR:-/root/sdk_vector_config}"
+    mkdir -p "${ANKI_SDK_CONFIG_DIR}"
     if [ -d "/vector-wirepod-python-sdk/sdk_vector_config" ]; then
-        cp -a "/vector-wirepod-python-sdk/sdk_vector_config/." "${ANKI_SDK_CONFIG_DIR:-/root/sdk_vector_config}/" || true
+        cp -a "/vector-wirepod-python-sdk/sdk_vector_config/." "${ANKI_SDK_CONFIG_DIR}/" || true
+    fi
+
+    if ! python3 -m anki_vector.configure --generate-config-only; then
+        echo "Error: SDK configuration generation failed at container startup" >&2
+        exit 1
     fi
 fi
 

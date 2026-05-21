@@ -1,0 +1,71 @@
+name: vector_containers
+
+services:
+  novnc-display-server:
+    build:
+      context: /Users/rodolphe/Documents/Docker/docker-noVNC-display
+      dockerfile: dockerfile
+    container_name: novnc-display-server
+    hostname: novnc-display-server
+    shm_size: "2gb"
+    restart: unless-stopped
+    ports:
+      - "6080:6080"
+    environment:
+      DISPLAY: ":0"
+      SCREEN_WIDTH: "1600"
+      SCREEN_HEIGHT: "900"
+      SCREEN_DEPTH: "24"
+      VNC_PASSWORD: ${VNC_PASSWORD:-password}
+    volumes:
+      - x11-socket:/tmp/.X11-unix
+    networks:
+      - default
+
+  ros2-jazzy-desktop:
+    container_name: ros2-jazzy-desktop
+    hostname: ros2-jazzy-desktop
+    init: true
+    ulimits:
+      nofile:
+        soft: 65535
+        hard: 65535
+    build:
+      context: ../..
+      dockerfile: vector-docker-ros2/docker/dockerfile
+      args:
+        USERNAME: root
+    privileged: true
+    env_file:
+      - ../../vector-w2b1/.env
+    environment:
+      LIBGL_ALWAYS_SOFTWARE: "1"
+      MESA_GL_VERSION_OVERRIDE: "3.3"
+      MESA_GLSL_VERSION_OVERRIDE: "330"
+      XDG_RUNTIME_DIR: /tmp/runtime-root
+      USERNAME: root
+      DISPLAY: ":0"
+      QT_X11_NO_MITSHM: "1"
+      ROS_AUTOMATIC_DISCOVERY_RANGE: SUBNET
+      ROS_DOMAIN_ID: "42"
+      RMW_IMPLEMENTATION: rmw_fastrtps_cpp
+    depends_on:
+      - novnc-display-server
+    networks:
+      - default
+    volumes:
+      - ros2-data:/root
+      - "../../:/Vector:cached"
+      - "/dev/dri:/dev/dri:cached"
+      - x11-socket:/tmp/.X11-unix
+    ports:
+      - "8765:8765"
+
+networks:
+  default:
+    name: vector_containers_default
+
+volumes:
+  x11-socket:
+  ros2-data:
+    driver: local

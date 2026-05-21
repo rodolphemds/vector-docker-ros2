@@ -6,8 +6,7 @@ set -euo pipefail
 # Variables de configuration
 VECTOR="vector.local"
 ENV_VAR_NAME="VECTOR_IP"
-# Use ANKI_SDK_CONFIG_DIR env var if set, otherwise default to /root/sdk_vector_config
-SDK_CONFIG_DIR="${ANKI_SDK_CONFIG_DIR:-/root/sdk_vector_config}"
+SDK_CONFIG_DIR="${ANKI_SDK_CONFIG_DIR}"
 FILE_TO_UPDATE="${SDK_CONFIG_DIR}/sdk_config.ini"
 SUBSTITUTION_FUNCTION='s/^(ip[[:space:]]*=[[:space:]]*).*/\1__IP__/'
 
